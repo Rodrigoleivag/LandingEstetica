@@ -40,7 +40,7 @@ tocar los componentes.
                         │
             ┌───────────┴───────────┐
             ▼                       ▼
-        Netlify              Cloudflare Pages
+        Netlify             Cloudflare Workers
 ```
 
 - **Frontend:** React 18 (solo `react` y `react-dom`) + Vite 6 (dev server y build).
@@ -80,8 +80,8 @@ tocar los componentes.
 | **Título de sección** | `src/components/SectionTitle.jsx` | Acento en caligrafía + título en serif |
 | **Pétalos** | `src/components/Petalos.jsx` | Fondo decorativo SVG liviano (sin imágenes) |
 | **Estilos globales** | `src/index.css` | Tailwind + variables `@theme` (colores y tipografías) + fade-in + motion reducido |
-| **Config. de build** | `vite.config.js`, `netlify.toml`, `public/_redirects` | Build, Tailwind v4 y deploy en Netlify |
-| **Assets** | `public/` | `logo.png` (agregar), `favicon.svg`, `_redirects`, `servicios/` (fotos de tratamientos), `reserva/` (fotos de los pasos de reserva), `galeria/` (fotos de resultados) |
+| **Config. de build** | `vite.config.js`, `netlify.toml`, `wrangler.jsonc` | Build, Tailwind v4 y deploy en Netlify / Cloudflare |
+| **Assets** | `public/` | `logo.png` (agregar), `favicon.svg`, `servicios/` (fotos de tratamientos), `reserva/` (fotos de los pasos de reserva), `galeria/` (fotos de resultados) |
 
 ## Requisitos
 
@@ -96,6 +96,8 @@ npm install        # instalar dependencias (una sola vez)
 npm run dev        # desarrollo local → http://localhost:5173
 npm run build      # build de producción → carpeta dist/
 npm run preview    # probar el build localmente en http://localhost:4173
+npm run deploy     # build + deploy a Cloudflare Workers (wrangler deploy)
+npm run deploy:pages # build + deploy a Cloudflare Pages
 ```
 
 ## Deploy
@@ -115,7 +117,30 @@ npm install -g netlify-cli
 netlify deploy --prod    # desde la raíz del proyecto
 ```
 
-### Cloudflare Pages
+### Cloudflare Workers (recomendado para este proyecto)
+
+1. En Cloudflare dashboard: **Workers & Pages → Create → Worker**
+2. Conecta el repositorio de GitHub y deja la configuración detectada:
+   - **Build command:** `npm run build`
+   - **Deploy command:** `npx wrangler deploy`
+   - **Output directory:** `dist`
+3. La configuración está en `wrangler.jsonc` (nombre del worker `landingestetica`,
+   assets en `./dist` y fallback SPA con `not_found_handling: "single-page-application"`).
+
+O desde terminal:
+
+```bash
+npm run deploy          # = npm run build && wrangler deploy
+```
+
+> **Importante:** no vuelvas a crear un archivo `public/_redirects`. Cloudflare
+> Workers también parsea ese archivo y **rechaza el deploy** con
+> `Invalid _redirects configuration: Infinite loop detected in this rule`
+> (código `100324`) cuando contiene la regla `/* /index.html 200`.
+> El fallback SPA en Netlify está en `netlify.toml` (`[[redirects]]`), y en
+> Cloudflare lo resuelve `wrangler.jsonc`.
+
+### Cloudflare Pages (alternativa)
 
 1. En Cloudflare dashboard: **Workers & Pages → Create → Pages → Connect to Git**
 2. Framework preset: **Vite**
@@ -126,7 +151,7 @@ O desde terminal:
 
 ```bash
 npm run build
-npx wrangler pages deploy dist
+npm run deploy:pages     # = wrangler pages deploy dist
 ```
 
 ## Módulos opcionales (se activan en `negocio.js`)

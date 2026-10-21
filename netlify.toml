@@ -7,3 +7,13 @@
   [headers.values]
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Fallback SPA (equivale al antigo public/_redirects).
+# Va en netlify.toml y NO en public/_redirects porque Cloudflare Workers
+# también parsea ese archivo y rechaza la regla "/* /index.html 200"
+# por detectar un loop infinito. Acá el sitio es de una sola página,
+# así que el fallback solo hace falta en Netlify.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
