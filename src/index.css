@@ -1,0 +1,54 @@
+@import 'tailwindcss';
+
+/* ============================================================
+ *  PALETA Y TIPOGRAFÍAS — edita aquí para cambiar los colores
+ * ============================================================ */
+@theme {
+  --color-fondo: #fbeff1; /* rosa muy claro, fondo general */
+  --color-rosa: #e8a9b6; /* rosa empolvado, botones y detalles */
+  --color-rosa-suave: #f5dde3; /* rosa apenas más intenso, fondos */
+  --color-malva: #7a4358; /* malva oscuro, títulos y texto principal */
+  --color-malva-claro: #9c6076; /* malva más suave, texto secundario */
+  --color-crema: #fff8f4; /* crema, tarjetas */
+
+  --font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-script: 'Great Vibes', 'Snell Roundhand', cursive;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem; /* compensa el navbar fijo */
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-fondo);
+  color: var(--color-malva);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Animación mínima de aparición */
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animar {
+  animation: aparecer 0.7s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animar {
+    animation: none;
+  }
+}
